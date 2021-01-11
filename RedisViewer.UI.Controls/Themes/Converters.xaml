@@ -1,0 +1,7 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converters="clr-namespace:RedisViewer.UI.Controls.Converters">
+
+    <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" InvertVisibility="False" />
+    <converters:BoolToVisibilityConverter x:Key="InvertBoolToVisibilityConverter" InvertVisibility="True" />
+</ResourceDictionary>

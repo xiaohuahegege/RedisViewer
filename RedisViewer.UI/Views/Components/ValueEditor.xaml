@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="RedisViewer.UI.Views.Components.ValueEditor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:components="clr-namespace:RedisViewer.UI.Views.Components"
+             x:ClassModifier="internal">
+
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Resources/Styles/ValueEditorStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Style="{StaticResource LabelBoxStyle}">
+            <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type components:ValueEditor}}, Path=Field}" 
+                       Style="{StaticResource LabelStyle}" />
+        </Border>
+
+        <Border Grid.Row="1" Style="{StaticResource ValueBoxStyle}">
+            <TextBox Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type components:ValueEditor}}, Path=Value}" 
+                     Style="{StaticResource ValueStyle}" />
+        </Border>
+    </Grid>
+</UserControl>

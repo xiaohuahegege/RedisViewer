@@ -1,0 +1,9 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/RedisViewer.UI.Controls;component/Themes/Converters.xaml" />
+        <ResourceDictionary Source="/RedisViewer.UI.Controls;component/Pagination/Themes/Generic.xaml" />
+        <ResourceDictionary Source="/RedisViewer.UI.Controls;component/ScrollViewer/Themes/Generic.xaml" />
+        <ResourceDictionary Source="/RedisViewer.UI.Controls;component/ListBox/Themes/Generic.xaml" />
+        <ResourceDictionary Source="/RedisViewer.UI.Controls;component/Window/Themes/Generic.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>
