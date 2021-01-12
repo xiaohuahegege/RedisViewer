@@ -4,6 +4,7 @@
         <ResourceDictionary Source="/RedisViewer.UI.Controls;component/Pagination/Themes/Generic.xaml" />
         <ResourceDictionary Source="/RedisViewer.UI.Controls;component/ScrollViewer/Themes/Generic.xaml" />
         <ResourceDictionary Source="/RedisViewer.UI.Controls;component/ListBox/Themes/Generic.xaml" />
+        <ResourceDictionary Source="/RedisViewer.UI.Controls;component/ProgressRing/Themes/Generic.xaml" />
         <ResourceDictionary Source="/RedisViewer.UI.Controls;component/Window/Themes/Generic.xaml" />
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

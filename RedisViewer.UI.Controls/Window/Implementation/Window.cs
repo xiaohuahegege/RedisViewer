@@ -22,6 +22,15 @@ namespace RedisViewer.UI.Controls
             set => SetValue(IsShowLoadingProperty, value);
         }
 
+        public static readonly DependencyProperty IsValidationEnabledProperty =
+            DependencyProperty.Register("IsValidationEnabled", typeof(bool), typeof(Window), new PropertyMetadata(false));
+
+        public bool IsValidationEnabled
+        {
+            get => (bool)GetValue(IsValidationEnabledProperty);
+            set => SetValue(IsValidationEnabledProperty, value);
+        }
+
         static Window()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(Window), new FrameworkPropertyMetadata(typeof(Window)));

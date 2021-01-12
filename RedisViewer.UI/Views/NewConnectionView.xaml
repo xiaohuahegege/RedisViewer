@@ -8,7 +8,9 @@
                  WindowStartupLocation="CenterOwner"
                  ResizeMode="NoResize"
                  ShowInTaskbar="False"
-                 x:ClassModifier="internal">
+                 x:ClassModifier="internal"
+                 IsValidationEnabled="{Binding IsValidationEnabled}"
+                 IsShowLoading="{Binding IsShowLoading}">
 
     <controls:Window.Resources>
         <ResourceDictionary>
@@ -44,7 +46,8 @@
 
                 <!--Name-->
                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Name" Style="{StaticResource LabelStyle}" />
-                <TextBox Grid.Row="0" Grid.Column="1" MaxLength="80" Text="{Binding Connection.Name}" Style="{StaticResource TextBoxStyle}" />
+                <TextBox Grid.Row="0" Grid.Column="1" MaxLength="80" Style="{StaticResource TextBoxStyle}"
+                         Text="{Binding Name, UpdateSourceTrigger=LostFocus, Mode=TwoWay, ValidatesOnDataErrors=True}" />
 
                 <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
                     <Grid.ColumnDefinitions>
@@ -56,16 +59,18 @@
 
                     <!--Host-->
                     <TextBlock Grid.Column="0" Text="Host" Style="{StaticResource LabelStyle}" />
-                    <TextBox Grid.Column="1" MaxLength="40" Text="{Binding Connection.Host}" Style="{StaticResource TextBoxStyle}" />
+                    <TextBox Grid.Column="1" MaxLength="40" Style="{StaticResource TextBoxStyle}"
+                             Text="{Binding Host, UpdateSourceTrigger=LostFocus, Mode=TwoWay, ValidatesOnDataErrors=True}" />
 
                     <!--Port-->
                     <TextBlock Grid.Column="2" Text=":" Style="{StaticResource LabelStyle}" HorizontalAlignment="Center" />
-                    <TextBox Grid.Column="3" MaxLength="8" Text="{Binding Connection.Port}" Style="{StaticResource TextBoxStyle}" />
+                    <TextBox Grid.Column="3" MaxLength="8" Style="{StaticResource TextBoxStyle}"
+                             Text="{Binding Port, UpdateSourceTrigger=LostFocus, Mode=TwoWay, ValidatesOnDataErrors=True}"/>
                 </Grid>
 
                 <!--Auth-->
                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Auth" Style="{StaticResource LabelStyle}" />
-                <TextBox Grid.Row="2" Grid.Column="1" MaxLength="80" Text="{Binding Connection.Auth}" Style="{StaticResource TextBoxStyle}" />
+                <TextBox Grid.Row="2" Grid.Column="1" MaxLength="80" Text="{Binding Auth}" Style="{StaticResource TextBoxStyle}" />
 
                 <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Bottom">
                     <Grid.ColumnDefinitions>

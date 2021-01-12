@@ -37,6 +37,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="9.3.0" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.19" />
     <PackageReference Include="Prism.Core" Version="8.0.0.1909" />
     <PackageReference Include="Prism.Unity" Version="8.0.0.1909" />
