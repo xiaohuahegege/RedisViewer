@@ -1,6 +1,7 @@
 ﻿using Prism.Ioc;
 using Prism.Services.Dialogs;
 using Unity;
+using Unity.Lifetime;
 
 namespace RedisViewer.Core
 {
@@ -9,7 +10,7 @@ namespace RedisViewer.Core
         public static IUnityContainer AddServices(this IUnityContainer container)
         {
             container.RegisterSingleton<IRegionDialogService, RegionDialogService>();
-            container.RegisterSingleton<IMessageService, MessageService>();
+            container.RegisterType(typeof(IMessageService<>), typeof(MessageService<>), new TransientLifetimeManager());
             container.RegisterSingleton<IConnectionService, ConnectionService>();
             return container;
         }

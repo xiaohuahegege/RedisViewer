@@ -58,6 +58,12 @@
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
+    <ContentControl x:Key="WindowLoading">
+        <Border Background="#fff" Opacity=".7">
+            <controls:ProgressRing IsActive="{Binding IsShowLoading}" Foreground="#3370FF" Width="30" Height="30" />
+        </Border>
+    </ContentControl>
+
     <Style TargetType="{x:Type controls:Window}">
         <Setter Property="Foreground" Value="{StaticResource Window.Static.Foreground}" />
         <Setter Property="Background" Value="{StaticResource Window.Static.Background}" />
@@ -79,6 +85,10 @@
                                     <RowDefinition Height="*" />
                                 </Grid.RowDefinitions>
 
+                                <!--Loading-->
+                                <ContentControl x:Name="loading" Grid.Row="0" Grid.RowSpan="2" Panel.ZIndex="99" Content="{StaticResource WindowLoading}" Visibility="Collapsed" />
+
+                                <!--Contents-->
                                 <Border Grid.Row="0" Padding="14,0">
                                     <Grid VerticalAlignment="Center">
                                         <Grid.ColumnDefinitions>
@@ -88,7 +98,9 @@
                                         </Grid.ColumnDefinitions>
 
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0">
+                                            <!--Icon-->
                                             <Image />
+                                            <!--Title-->
                                             <TextBlock Text="{TemplateBinding Title}" />
                                         </StackPanel>
 
@@ -140,6 +152,17 @@
                             </MultiTrigger.Conditions>
                             <Setter TargetName="ResizeGrip" Property="Visibility" Value="Visible" />
                         </MultiTrigger>
+                        <Trigger Property="IsShowLoading" Value="True">
+                            <Setter TargetName="loading" Property="Visibility" Value="Visible" />
+                            <Setter Property="KeyboardNavigation.IsTabStop" Value="False" />
+                            <Setter Property="KeyboardNavigation.AcceptsReturn" Value="False" />
+                            <Setter Property="KeyboardNavigation.ControlTabNavigation" Value="None" />
+                            <Setter Property="KeyboardNavigation.DirectionalNavigation" Value="None" />
+                            <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
+                            <Setter Property="Focusable" Value="False" />
+                            <Setter Property="SnapsToDevicePixels" Value="False" />
+                            <Setter Property="IsEnabled" Value="False" />
+                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

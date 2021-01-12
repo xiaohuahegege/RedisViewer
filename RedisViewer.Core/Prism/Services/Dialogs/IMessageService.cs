@@ -1,7 +1,7 @@
 ﻿namespace Prism.Services.Dialogs
 {
-    public interface IMessageService
+    public interface IMessageService<T>
     {
-        void Show(string title, string message);
+        void ShowAlert(string title, string message);
     }
 }

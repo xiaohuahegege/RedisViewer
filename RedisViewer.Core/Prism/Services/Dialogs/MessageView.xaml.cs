@@ -1,12 +1,15 @@
-﻿using System.Windows;
+﻿using RedisViewer.UI.Controls;
 
-namespace RedisViewer.Core.Prism.Services.Dialogs
+namespace Prism.Services.Dialogs
 {
-    public partial class MessageView : Window
+    sealed partial class MessageView : Window
     {
         public MessageView()
         {
             InitializeComponent();
+            DataContext = this;
         }
+
+        public string Message { get; set; }
     }
 }
