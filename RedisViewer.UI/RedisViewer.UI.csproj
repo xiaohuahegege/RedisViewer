@@ -13,7 +13,10 @@
     <None Remove="Resources\Images\connected.png" />
     <None Remove="Resources\Images\connection.png" />
     <None Remove="Resources\Images\database.png" />
+    <None Remove="Resources\Images\delete.png" />
     <None Remove="Resources\Images\disconnected.png" />
+    <None Remove="Resources\Images\edit.png" />
+    <None Remove="Resources\Images\info.png" />
     <None Remove="Resources\Images\key.png" />
     <None Remove="Resources\Images\more.png" />
     <None Remove="Resources\Images\reload.png" />
@@ -50,10 +53,19 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\Images\delete.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\Images\disconnected.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\Images\connection.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Images\edit.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Images\info.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\Images\key.png">

@@ -11,15 +11,8 @@ namespace RedisViewer.Core
     /// <summary>
     /// Key info
     /// </summary>
-    public class KeyInfo : BindableBase
+    public class KeyInfo : InfoBase
     {
-        private string _name;
-        public string Name
-        {
-            get => _name;
-            set => SetProperty(ref _name, value);
-        }
-
         private RedisType _type;
         public RedisType Type
         {
@@ -27,15 +20,9 @@ namespace RedisViewer.Core
             set => SetProperty(ref _type, value);
         }
 
-        private bool _isExpanded;
-        public bool IsExpanded
-        {
-            get => _isExpanded;
-            set => SetProperty(ref _isExpanded, value);
-        }
-
-        private TimeSpan? _ttl;
-        public TimeSpan? TTL
+        // if type is double or timespan, maybe the value will overflow, just use the string
+        private string _ttl;
+        public string TTL
         {
             get => _ttl;
             set => SetProperty(ref _ttl, value);
@@ -46,16 +33,16 @@ namespace RedisViewer.Core
         public KeyInfo(IDatabase database, string name)
         {
             _database = database;
-            _name = name;
+            Name = name;
         }
 
         public async Task<KeyInfo> LoadAsync()
         {
-            var type = await _database.KeyTypeAsync(_name);
-            var ttl = await _database.KeyTimeToLiveAsync(_name);
+            var type = await _database.KeyTypeAsync(Name);
+            var ttl = await _database.ExecuteAsync("TTL", Name);
 
             Type = type;
-            TTL = ttl;
+            TTL = ttl.ToString();
 
             return this;
         }
@@ -66,27 +53,27 @@ namespace RedisViewer.Core
         /// <returns></returns>
         public async Task<bool> DeleteAsync()
         {
-            return await _database.KeyDeleteAsync(_name);
+            return await _database.KeyDeleteAsync(Name);
         }
 
         public async Task<string> GetValueByStringAsync()
         {
-            return await _database.StringGetAsync(_name);
+            return await _database.StringGetAsync(Name);
         }
 
         public async Task<bool> SetByStringAsync(string value)
         {
-            return await _database.StringSetAsync(_name, value);
+            return await _database.StringSetAsync(Name, value);
         }
 
         public async Task<bool> RenameAsync(string name)
         {
-            return await _database.KeyRenameAsync(_name, name);
+            return await _database.KeyRenameAsync(Name, name);
         }
 
         public async Task<bool> SetTTLAsync(DateTime? expiry)
         {
-            return await _database.KeyExpireAsync(_name, expiry);
+            return await _database.KeyExpireAsync(Name, expiry);
         }
 
         //public async Task<RedisValue[]> GetValueByListAsync(long start, long stop)
@@ -99,11 +86,11 @@ namespace RedisViewer.Core
             if (pageIndex <= 0)
                 pageIndex = 1;
 
-            var pageCount = (int)(await _database.ListLengthAsync(_name)) / (pageSize + 1);
+            var pageCount = (int)(await _database.ListLengthAsync(Name)) / (pageSize + 1);
             var start = pageIndex == 1 ? 0 : ((pageIndex - 1) * (pageSize + 1));
             var stop = pageIndex == 1 ? pageSize : (start + pageSize);
 
-            return (pageCount, pageIndex, (await _database.ListRangeAsync(_name, start, stop))
+            return (pageCount, pageIndex, (await _database.ListRangeAsync(Name, start, stop))
                 .Select((value, index) => new KeyListValue { Index = start == 0 ? (index + 1) : (start + index), Value = value }));
         }
 
@@ -112,11 +99,11 @@ namespace RedisViewer.Core
             if (pageIndex <= 0)
                 pageIndex = 1;
 
-            var pageCount = (int)(await _database.SortedSetLengthAsync(_name)) / (pageSize + 1);
+            var pageCount = (int)(await _database.SortedSetLengthAsync(Name)) / (pageSize + 1);
             var start = pageIndex == 1 ? 0 : ((pageIndex - 1) * (pageSize + 1));
             var stop = pageIndex == 1 ? pageSize : (start + pageSize);
 
-            var values = (await _database.SortedSetRangeByRankWithScoresAsync(_name, start, stop))
+            var values = (await _database.SortedSetRangeByRankWithScoresAsync(Name, start, stop))
                 .Select((value, index) => new KeyZsetValue { Index = start == 0 ? (index + 1) : (start + index), Value = value.Element, Score = value.Score });
 
             return (pageCount, pageIndex, values);
@@ -133,7 +120,7 @@ namespace RedisViewer.Core
 
         public async Task<StreamEntry[]> GetValueByStreamAsync(int count)
         {
-            return await _database.StreamReadAsync(_name, "-", 1000);
+            return await _database.StreamReadAsync(Name, "-", 1000);
         }
     }
 

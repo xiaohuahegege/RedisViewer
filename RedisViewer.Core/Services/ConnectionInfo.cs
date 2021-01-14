@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Prism.Mvvm;
 using StackExchange.Redis;
 using System;
 using System.Collections.ObjectModel;
@@ -10,16 +9,9 @@ namespace RedisViewer.Core
     /// <summary>
     /// Connection info
     /// </summary>
-    public class ConnectionInfo : BindableBase
+    public class ConnectionInfo : InfoBase
     {
         private string _name;
-
-        [JsonProperty("name", Required = Required.Always)]
-        public string Name
-        {
-            get => _name;
-            set => SetProperty(ref _name, value);
-        }
 
         private string _host = "127.0.0.1";
 
@@ -55,15 +47,6 @@ namespace RedisViewer.Core
         {
             get => _connectionSecurity;
             set => SetProperty(ref _connectionSecurity, value);
-        }
-
-        private bool _isExpanded;
-
-        [JsonIgnore]
-        public bool IsExpanded
-        {
-            get => _isExpanded;
-            set => SetProperty(ref _isExpanded, value);
         }
 
         private bool _isConnecting;
@@ -127,12 +110,7 @@ namespace RedisViewer.Core
                 _connection = await ConnectionMultiplexer.ConnectAsync(GetConfigurationOptions());
 
                 if (_connection != null && _connection.IsConnected)
-                {
-                    Databases = new DatabaseCollection(_connection);
-                    Databases.Load();
-
-                    IsExpanded = IsConnected = true;
-                }
+                    IsConnected = true;
             }
             catch (Exception)
             {
@@ -140,6 +118,30 @@ namespace RedisViewer.Core
             }
 
             return IsConnected;
+        }
+
+        public async Task LoadAsync()
+        {
+            if (_connection != null && _connection.IsConnected)
+            {
+                if (Databases == null)
+                    Databases = new DatabaseCollection(_connection);
+
+                Databases.Clear();
+                Databases.Load();
+
+                IsExpanded = true;
+            }
+        }
+
+        public async Task<bool> RemoveAsync()
+        {
+            Databases?.Clear();
+
+            if (_connection != null && _connection.IsConnected)
+                await _connection.CloseAsync();
+
+            return true;
         }
 
         public async Task<bool> TestConnectAsync()
@@ -175,7 +177,10 @@ namespace RedisViewer.Core
 
     public class ConnectionCollection : ObservableCollection<ConnectionInfo>
     {
-
+        public async Task<bool> RemoveAsync(ConnectionInfo connection)
+        {
+            return Remove(connection);
+        }
     }
 
     public enum ConnectionSecurity

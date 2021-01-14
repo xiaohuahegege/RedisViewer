@@ -26,9 +26,9 @@ namespace RedisViewer.Core
                 .WriteJsonToFileAsync(connections.ToJsonString(Formatting.Indented), _encoding);
         }
 
-        public void RemoveAsync(ConnectionInfo connection)
+        public async Task<bool> RemoveAsync(ConnectionInfo connection)
         {
-
+            return false;
         }
 
         public void UpdateAsync(ConnectionInfo connection)

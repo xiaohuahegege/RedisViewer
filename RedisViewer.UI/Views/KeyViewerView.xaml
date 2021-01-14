@@ -1,6 +1,7 @@
 ﻿<UserControl x:Class="RedisViewer.UI.Views.KeyViewerView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:prism="http://prismlibrary.com/"
+             xmlns:icons="http://schemas.imiyu.cc/icons"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:ClassModifier="internal">
 
@@ -22,6 +23,8 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <!--Name field-->
@@ -29,6 +32,22 @@
             
             <!--TTL field-->
             <ContentControl Grid.Column="1" Template="{StaticResource TTLTemplateStyle}" Margin="10,0,0,0" />
+
+            <!--Delete button-->
+            <Button Grid.Column="2" Style="{StaticResource ButtonStyle}" Margin="10,0,0,0" Command="{Binding DeleteCommand}">
+                <StackPanel Orientation="Horizontal" Margin="6,0">
+                    <icons:FIcon Icon="Delete" Size="13" Foreground="#606060" VerticalAlignment="Center" />
+                    <TextBlock Text="Delete" Style="{StaticResource ButtonTextStyle}" />
+                </StackPanel>
+            </Button>
+
+            <!--Reload button-->
+            <Button Grid.Column="3" Style="{StaticResource ButtonStyle}" Margin="10,0,0,0" Command="{Binding ReloadCommand}">
+                <StackPanel Orientation="Horizontal" Margin="6,0">
+                    <icons:FIcon Icon="Refresh" Size="13" Foreground="#606060" VerticalAlignment="Center" />
+                    <TextBlock Text="Reload" Style="{StaticResource ButtonTextStyle}" />
+                </StackPanel>
+            </Button>
         </Grid>
 
         <!--Key value region-->

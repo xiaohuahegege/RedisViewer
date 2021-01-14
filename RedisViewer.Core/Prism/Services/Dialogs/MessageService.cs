@@ -22,7 +22,7 @@ namespace Prism.Services.Dialogs
         {
             // Get window by datacontext, T is view model
             return Application.Current.Windows.OfType<Window>()
-                .FirstOrDefault(c => c.DataContext != null && c.DataContext.GetType().Equals(type));
+                .FirstOrDefault(c => c.DataContext != null && c.DataContext.GetType().Equals(type)) ?? Application.Current.MainWindow;
         }
     }
 }

@@ -4,7 +4,7 @@ using StackExchange.Redis;
 
 namespace Prism.Regions
 {
-    public static class IRegionManagerExtensions
+    internal static class IRegionManagerExtensions
     {
         public static void ShowKeyViewer(this IRegionManager regionManager, KeyInfo key)
         {
@@ -28,6 +28,17 @@ namespace Prism.Regions
             };
 
             regionManager.RequestNavigate("ViewerRegion", page, parameters);
+        }
+
+        public static void ShowHomeView(this IRegionManager regionManager)
+        {
+            regionManager.RequestNavigate("ShellRegion", nameof(HomeView));
+        }
+
+        public static void ShowServerInfoView(this IRegionManager regionManager, ConnectionInfo connection)
+        {
+            regionManager.RequestNavigate("ShellRegion", nameof(ServerInfoView),
+                new NavigationParameters { { "connection_info", connection } });
         }
     }
 }

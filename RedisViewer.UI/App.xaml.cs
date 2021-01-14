@@ -27,8 +27,14 @@ namespace RedisViewer.UI
             container.RegisterType<IKeyStringViewModel, KeyStringViewModel>();
             container.RegisterType<IKeyZsetViewModel, KeyZsetViewModel>();
             container.RegisterType<IKeyViewerViewModel, KeyViewerViewModel>();
-            container.RegisterType<IDialogWindow, NewConnectionView>(nameof(NewConnectionView));
+            container.RegisterType<INewKeyViewModel, NewKeyViewModel>();
+            container.RegisterType<ILeftNavViewModel, LeftNavViewModel>();
             container.RegisterType<IShellViewModel, ShellViewModel>();
+            container.RegisterType<IServerInfoViewModel, ServerInfoViewModel>();
+
+            // Register dialogs
+            container.RegisterType<IDialogWindow, NewConnectionView>(nameof(NewConnectionView));
+            container.RegisterType<IDialogWindow, NewKeyView>(nameof(NewKeyView));
 
             // Register view for dialog services
             containerRegistry.RegisterForNavigation<KeyHashView>(nameof(KeyHashView));
@@ -38,6 +44,8 @@ namespace RedisViewer.UI
             containerRegistry.RegisterForNavigation<KeyStringView>(nameof(KeyStringView));
             containerRegistry.RegisterForNavigation<KeyZsetView>(nameof(KeyZsetView));
             containerRegistry.RegisterForNavigation<KeyViewerView>(nameof(KeyViewerView));
+            containerRegistry.RegisterForNavigation<HomeView>(nameof(HomeView));
+            containerRegistry.RegisterForNavigation<ServerInfoView>(nameof(ServerInfoView));
 
             UnityResolver.SetContainer(container);
         }

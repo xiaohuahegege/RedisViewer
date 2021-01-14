@@ -3,13 +3,13 @@
                  xmlns:prism="http://prismlibrary.com/"
                  xmlns:controls="http://schemas.imiyu.cc/controls"
                  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                 xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
-                 xmlns:models="clr-namespace:RedisViewer.Core;assembly=RedisViewer.Core"
-                 Title="Redis Viewer" 
-                 Height="700" 
+                 xmlns:uc="clr-namespace:RedisViewer.UI.Views"
+                 Title="Redis Viewer"
+                 Height="700"
                  Width="1250"
                  WindowStartupLocation="CenterScreen"
-                 x:ClassModifier="internal">
+                 x:ClassModifier="internal"
+                 IsShowLoading="{Binding IsShowLoading}">
 
     <controls:Window.Resources>
         <ResourceDictionary>
@@ -19,13 +19,6 @@
         </ResourceDictionary>
     </controls:Window.Resources>
 
-    <behaviors:Interaction.Triggers>
-        <!--Page loaded event-->
-        <behaviors:EventTrigger EventName="Loaded">
-            <behaviors:InvokeCommandAction Command="{Binding LoadCommand}" />
-        </behaviors:EventTrigger>
-    </behaviors:Interaction.Triggers>
-    
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="270" MinWidth="270" />
@@ -33,78 +26,7 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <!--Left content-->
-        <Grid Grid.Column="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
-
-            <!--New connection button-->
-            <Button Grid.Row="0" Style="{StaticResource NewConnectionStyle}" Command="{Binding NewConnectionCommand}">
-                <StackPanel Orientation="Horizontal">
-                    <Image Source="/Resources/Images/add.png" Style="{StaticResource ConnectionItemIconStyle}" />
-                    <TextBlock Text="Connect to Redis server" />
-                </StackPanel>
-            </Button>
-
-            <!--Treeview-->
-            <TreeView x:Name="nav" Grid.Row="1" ItemsSource="{Binding Connections}" Style="{StaticResource ConnectionsStyle}">
-                <TreeView.Resources>
-                    <!-- Key info -->
-                    <DataTemplate DataType="{x:Type models:KeyInfo}">
-                        <StackPanel Orientation="Horizontal">
-                            <!--Key icon-->
-                            <Image Source="/Resources/Images/key.png" Style="{StaticResource ConnectionItemIconStyle}" />
-                            <!--Key name-->
-                            <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" />
-                        </StackPanel>
-                    </DataTemplate>
-
-                    <!-- Database info -->
-                    <HierarchicalDataTemplate DataType="{x:Type models:DatabaseInfo}" ItemsSource="{Binding Keys}">
-                        <StackPanel Orientation="Horizontal">
-                            <!--Database icon-->
-                            <Image Source="/Resources/Images/database.png" Style="{StaticResource ConnectionItemIconStyle}" />
-                            <!--Database name-->
-                            <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" />
-                        </StackPanel>
-                        <HierarchicalDataTemplate.ItemContainerStyle>
-                            <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource ConnectionItemStyle}">
-                                <Setter Property="Padding" Value="14,6" />
-                            </Style>
-                        </HierarchicalDataTemplate.ItemContainerStyle>
-                    </HierarchicalDataTemplate>
-
-                    <!-- Connection info -->
-                    <HierarchicalDataTemplate DataType="{x:Type models:ConnectionInfo}" ItemsSource="{Binding Databases}">
-                        <StackPanel Orientation="Horizontal">
-                            <!--If disconnected, show disconnected icon-->
-                            <Image Source="/Resources/Images/disconnected.png" Style="{StaticResource ConnectionItemIconStyle}" 
-                                   Visibility="{Binding IsConnected, Converter={StaticResource InvertBoolToVisibilityConverter}}" />
-                            <!--If connected, show connected icon-->
-                            <Image Source="/Resources/Images/connected.png" Style="{StaticResource ConnectionItemIconStyle}" 
-                                   Visibility="{Binding IsConnected, Converter={StaticResource BoolToVisibilityConverter}}" />
-                            <!--Connection name-->
-                            <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" />
-                        </StackPanel>
-                        <HierarchicalDataTemplate.ItemContainerStyle>
-                            <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource ConnectionItemStyle}">
-                                <Setter Property="Padding" Value="14,6" />
-                            </Style>
-                        </HierarchicalDataTemplate.ItemContainerStyle>
-                    </HierarchicalDataTemplate>
-                </TreeView.Resources>
-
-                <!--Treeview events-->
-                <behaviors:Interaction.Triggers>
-                    <!--Mouse left button click-->
-                    <behaviors:EventTrigger EventName="PreviewMouseUp">
-                        <behaviors:InvokeCommandAction Command="{Binding NavCommand}" CommandParameter="{Binding ElementName=nav, Path=SelectedItem}" />
-                    </behaviors:EventTrigger>
-                </behaviors:Interaction.Triggers>
-            </TreeView>
-        </Grid>
+        <uc:LeftNavView Grid.Column="0" />
 
         <!--Middle-->
         <GridSplitter Grid.Column="1" Width=".8" Background="#E4E0E0" ResizeBehavior="PreviousAndNext" BorderThickness="0" />

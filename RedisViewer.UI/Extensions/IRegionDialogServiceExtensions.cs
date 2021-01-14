@@ -4,7 +4,7 @@ using System;
 
 namespace Prism.Services.Dialogs
 {
-    public static class IRegionDialogServiceExtensions
+    internal static class IRegionDialogServiceExtensions
     {
         public static void ShowNewConnection(this IRegionDialogService dialogService, Action<IDialogResult> callback)
         {
@@ -13,7 +13,7 @@ namespace Prism.Services.Dialogs
 
         public static void ShowNewKey(this IRegionDialogService dialogService, DatabaseInfo database, Action<IDialogResult> callback)
         {
-            //dialogService.ShowDialog(nameof(NewKeyView), new DialogParameters { { "database_info", database } }, callback);
+            dialogService.ShowDialog(nameof(NewKeyView), new DialogParameters { { "database_info", database } }, callback);
         }
     }
 }
