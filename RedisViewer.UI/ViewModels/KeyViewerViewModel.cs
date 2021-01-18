@@ -6,7 +6,6 @@ using Prism.Services.Dialogs;
 using RedisViewer.Core;
 using RedisViewer.UI.Events;
 using StackExchange.Redis;
-using System;
 
 namespace RedisViewer.UI.ViewModels
 {
@@ -29,7 +28,7 @@ namespace RedisViewer.UI.ViewModels
         /// <summary>
         /// Rename key command
         /// </summary>
-        public DelegateCommand<string> RenameCommand { get; }
+        public DelegateCommand RenameCommand { get; }
 
         /// <summary>
         /// Set ttl command
@@ -45,36 +44,46 @@ namespace RedisViewer.UI.ViewModels
             // Delete key command
             DeleteCommand = new DelegateCommand(async () =>
             {
-                if (await _key.DeleteAsync())
-                    _eventAggregator.GetEvent<DeleteKeyEvent>().Publish(_key);
+                if (_messageService.ShowConfirm("Redis Viewer", "Do you really want to delete this key ?") == ButtonResult.OK)
+                {
+                    if (await _key.DeleteAsync())
+                        _eventAggregator.GetEvent<DeleteKeyEvent>().Publish(_key);
+                }
             });
 
             // Reload key value command
             ReloadCommand = new DelegateCommand(async () =>
             {
                 _key = await _key.LoadAsync();
-
-                Name = _key.Name;
-                TTL = _key.TTL;
-
                 ShowViewer();
             });
 
             // Rename key command
-            RenameCommand = new DelegateCommand<string>(async (name) =>
+            RenameCommand = new DelegateCommand(async () =>
             {
-                var success = await _key.RenameAsync(name);
+                var success = await _key.RenameAsync(Name.Trim());
 
                 if (success)
-                    _key.Name = name;
+                    _key.Name = NewName = Name.Trim();
 
-                _messageService.ShowAlert("Redis Viewer", success ? "Name updated successfully" : "Name update failed");
+                _messageService.ShowAlert("Redis Viewer", success ? "Update Success" : "Update failure");
+
             });
 
             // Set ttl command
-            SetTTLCommand = new DelegateCommand(() =>
+            SetTTLCommand = new DelegateCommand(async () =>
             {
-                //await _key.SetTTLAsync(DateTime.Now);
+                var value = long.Parse(TTL.Trim());
+                var success = await _key.SetTTLAsync(value);
+
+                if (success)
+                {
+                    _key.TTL = value;
+                    NewTTL = TTL.Trim();
+                }
+
+                _messageService.ShowAlert("Redis Viewer", success ? "TTL updated successfully" : "TTL update failed");
+
             });
         }
 
@@ -97,17 +106,16 @@ namespace RedisViewer.UI.ViewModels
                 ShowLoading(true);
 
                 _key = await key.LoadAsync(); // load key info, get the key ttl and type
-
-                Name = _key.Name;
-                TTL = _key.TTL;
-                Type = _key.Type;
-
                 ShowViewer();
             }
         }
 
         private void ShowViewer()
         {
+            Name = NewName = _key.Name;
+            TTL = NewTTL = _key.TTL.ToString();
+            Type = _key.Type;
+
             _regionManager.ShowKeyViewerByType(_key); // show key value detail by key type
         }
 
@@ -120,11 +128,25 @@ namespace RedisViewer.UI.ViewModels
             set => SetProperty(ref _name, value);
         }
 
+        private string _newName;
+        public string NewName
+        {
+            get => _newName;
+            set => SetProperty(ref _newName, value);
+        }
+
         private string _ttl;
         public string TTL
         {
             get => _ttl;
             set => SetProperty(ref _ttl, value);
+        }
+
+        private string _newTTL;
+        public string NewTTL
+        {
+            get => _newTTL;
+            set => SetProperty(ref _newTTL, value);
         }
 
         private RedisType _type;

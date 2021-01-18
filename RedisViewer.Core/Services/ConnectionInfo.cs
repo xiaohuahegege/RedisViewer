@@ -11,9 +11,7 @@ namespace RedisViewer.Core
     /// </summary>
     public class ConnectionInfo : InfoBase
     {
-        private string _name;
-
-        private string _host = "127.0.0.1";
+        private string _host;
 
         [JsonProperty("host", Required = Required.Always)]
         public string Host
@@ -22,7 +20,7 @@ namespace RedisViewer.Core
             set => SetProperty(ref _host, value);
         }
 
-        private int _port = 6379;
+        private int _port;
 
         [JsonProperty("port", Required = Required.Always)]
         public int Port
@@ -55,17 +53,7 @@ namespace RedisViewer.Core
         public bool IsConnecting
         {
             get => _isConnecting;
-            set
-            {
-                if (_isConnecting != value)
-                {
-                    _isConnecting = value;
-                    RaisePropertyChanged();
-
-                    if (value)
-                        IsConnected = IsExpanded = false;
-                }
-            }
+            set => SetProperty(ref _isConnecting, value);
         }
 
         private bool _isConnected = false;
@@ -74,17 +62,7 @@ namespace RedisViewer.Core
         public bool IsConnected
         {
             get => _isConnected;
-            set
-            {
-                if (_isConnected != value)
-                {
-                    _isConnected = value;
-                    RaisePropertyChanged();
-
-                    if (value)
-                        IsConnecting = false;
-                }
-            }
+            set => SetProperty(ref _isConnected, value);
         }
 
         private DatabaseCollection _databases;
@@ -103,19 +81,20 @@ namespace RedisViewer.Core
             if (_connection != null && _connection.IsConnected)
                 return true;
 
+            IsConnecting = true;
+            IsConnected = false;
+
             try
             {
-                IsConnecting = true;
-
                 _connection = await ConnectionMultiplexer.ConnectAsync(GetConfigurationOptions());
-
-                if (_connection != null && _connection.IsConnected)
-                    IsConnected = true;
+                IsConnected = _connection?.IsConnected ?? false;
             }
             catch (Exception)
             {
 
             }
+
+            IsConnecting = false;
 
             return IsConnected;
         }
@@ -134,14 +113,17 @@ namespace RedisViewer.Core
             }
         }
 
-        public async Task<bool> RemoveAsync()
+        public async Task<bool> DisconnectAsync()
         {
-            Databases?.Clear();
-
             if (_connection != null && _connection.IsConnected)
                 await _connection.CloseAsync();
 
             return true;
+        }
+
+        public void Clear()
+        {
+            Databases?.Clear();
         }
 
         public async Task<bool> TestConnectAsync()

@@ -11,9 +11,9 @@ namespace Prism.Services.Dialogs
             dialogService.ShowDialog(nameof(NewConnectionView), null, callback);
         }
 
-        public static void ShowNewKey(this IRegionDialogService dialogService, DatabaseInfo database, Action<IDialogResult> callback)
+        public static void ShowNewKey(this IRegionDialogService dialogService, InfoBase info, Action<IDialogResult> callback)
         {
-            dialogService.ShowDialog(nameof(NewKeyView), new DialogParameters { { "database_info", database } }, callback);
+            dialogService.ShowDialog(nameof(NewKeyView), new DialogParameters { { "value", info } }, callback);
         }
     }
 }

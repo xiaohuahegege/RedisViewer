@@ -29,7 +29,7 @@
         <!--New connection button-->
         <Button Grid.Row="0" Style="{StaticResource NewConnectionStyle}" Command="{Binding NewConnectionCommand}">
             <StackPanel Orientation="Horizontal">
-                <Image Source="/Resources/Images/add.png" Style="{StaticResource TreeItemIconStyle}" />
+                <Image Source="/Resources/Images/add.png" Style="{StaticResource TreeViewItemIconStyle}" />
                 <TextBlock Text="Connect to Redis server" />
             </StackPanel>
         </Button>
@@ -45,25 +45,90 @@
                         </Grid.ColumnDefinitions>
 
                         <StackPanel Grid.Column="0" Orientation="Horizontal">
-                            <Image Source="/Resources/Images/key.png" Style="{StaticResource TreeItemIconStyle}" />
-                            <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" />
+                            <Image Source="/Resources/Images/key.png" Style="{StaticResource TreeViewItemIconStyle}" />
+                            <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" VerticalAlignment="Center" />
                         </StackPanel>
 
                         <StackPanel Grid.Column="1" Orientation="Horizontal" Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityConverter}}">
                             <!--Copy key name-->
                             <Button ToolTip="Copy Key Name" Command="{Binding DataContext.CopyKeyNameCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
-                                    CommandParameter="{Binding}" Style="{StaticResource TreeItemButtonStyle}">
-                                <icons:FIcon Icon="Copy" Size="14" Foreground="#606060" />
+                                    CommandParameter="{Binding}" Style="{StaticResource TreeViewItemButtonStyle}" Margin="0">
+                                <icons:FIcon Icon="Copy" Size="14" Foreground="{StaticResource TreeView.Icon.Foreground}" />
                             </Button>
 
                             <!--Delete key-->
                             <Button ToolTip="Delete Key" Command="{Binding DataContext.DeleteKeyCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
-                                    CommandParameter="{Binding}" Style="{StaticResource TreeItemButtonStyle}" Margin="8,0,0,0">
-                                <icons:FIcon Icon="Delete" Size="14" Foreground="#606060" />
+                                    CommandParameter="{Binding}" Style="{StaticResource TreeViewItemButtonStyle}">
+                                <icons:FIcon Icon="Delete" Size="14" Foreground="{StaticResource TreeView.Icon.Foreground}" />
                             </Button>
                         </StackPanel>
                     </Grid>
                 </DataTemplate>
+
+                <!--Level-->
+                <HierarchicalDataTemplate DataType="{x:Type models:LevelInfo}" ItemsSource="{Binding Keys}">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Orientation="Horizontal">
+                            <!--If level is closed-->
+                            <Image Source="/Resources/Images/folder.png" Style="{StaticResource TreeViewItemIconStyle}"
+                                   Visibility="{Binding IsExpanded, Converter={StaticResource InvertBoolToVisibilityConverter}}"/>
+                            
+                            <!--If level is opened-->
+                            <Image Source="/Resources/Images/open_folder.png" Style="{StaticResource TreeViewItemIconStyle}"
+                                   Visibility="{Binding IsExpanded, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                            
+                            <!--Level name-->
+                            <TextBlock>
+                                <TextBlock.Text>
+                                    <MultiBinding StringFormat="{}{0} ({1})">
+                                        <Binding Path="Name" />
+                                        <Binding Path="Keys.Count" />
+                                    </MultiBinding>
+                                </TextBlock.Text>
+                                
+                                <ToolTipService.ToolTip>
+                                    <TextBlock>
+                                        <TextBlock.Text>
+                                            <MultiBinding StringFormat="{}{0} ({1})">
+                                                <Binding Path="Name" />
+                                                <Binding Path="Keys.Count" />
+                                            </MultiBinding>
+                                        </TextBlock.Text>
+                                    </TextBlock>
+                                </ToolTipService.ToolTip>
+                            </TextBlock>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Visibility="Collapsed">
+                            <Button ToolTip="Reload Namespace" Command="{Binding DataContext.ReloadLevelCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}" Style="{StaticResource TreeViewItemButtonStyle}" Margin="0">
+                                <icons:FIcon Icon="Refresh" Size="13" Foreground="{StaticResource TreeView.Icon.Foreground}" />
+                            </Button>
+
+                            <!--Add new key-->
+                            <Button ToolTip="Add New Key" Command="{Binding DataContext.NewKeyCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}" Style="{StaticResource TreeViewItemButtonStyle}">
+                                <icons:FIcon Icon="AddTo" Size="14" Foreground="{StaticResource TreeView.Icon.Foreground}" />
+                            </Button>
+
+                            <Button ToolTip="Copy Namespace Pattern" Command="{Binding DataContext.CopyLevelNameCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}" Style="{StaticResource TreeViewItemButtonStyle}">
+                                <icons:FIcon Icon="Copy" Size="14" Foreground="{StaticResource TreeView.Icon.Foreground}" />
+                            </Button>
+
+                            <!--Delete key-->
+                            <Button ToolTip="Delete Namespace" Command="{Binding DataContext.DeleteLevelCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}" Style="{StaticResource TreeViewItemButtonStyle}">
+                                <icons:FIcon Icon="Delete" Size="14" Foreground="{StaticResource TreeView.Icon.Foreground}" />
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </HierarchicalDataTemplate>
 
                 <!--Database-->
                 <HierarchicalDataTemplate DataType="{x:Type models:DatabaseInfo}" ItemsSource="{Binding Keys}">
@@ -75,10 +140,10 @@
 
                         <StackPanel Grid.Column="0" Orientation="Horizontal">
                             <!--Database icon-->
-                            <Image Source="/Resources/Images/database.png" Style="{StaticResource TreeItemIconStyle}" />
-                            
+                            <Image Source="/Resources/Images/database.png" Style="{StaticResource TreeViewItemIconStyle}" />
+
                             <!--Database name-->
-                            <TextBlock>
+                            <TextBlock VerticalAlignment="Center">
                                 <!--Database text-->
                                 <TextBlock.Text>
                                     <MultiBinding StringFormat="{}db{0} ({1})">
@@ -101,24 +166,19 @@
                             </TextBlock>
                         </StackPanel>
                         <StackPanel Grid.Column="1" Orientation="Horizontal" Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <!--Reload keys-->
+                            <Button ToolTip="Reload Keys" Command="{Binding DataContext.ReloadDatabaseCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}" Style="{StaticResource TreeViewItemButtonStyle}" Margin="0">
+                                <icons:FIcon Icon="Refresh" Size="13" Foreground="{StaticResource TreeView.Icon.Foreground}" />
+                            </Button>
+                            
                             <!--Add new key-->
                             <Button ToolTip="Add New Key" Command="{Binding DataContext.NewKeyCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
-                                    CommandParameter="{Binding}" Style="{StaticResource TreeItemButtonStyle}">
-                                <icons:FIcon Icon="AddTo" Size="14" Foreground="#606060" />
-                            </Button>
-
-                            <!--Reload keys-->
-                            <Button ToolTip="Reload Keys" Command="{Binding DataContext.ReloadKeysCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
-                                    CommandParameter="{Binding}" Style="{StaticResource TreeItemButtonStyle}" Padding="1,1,0,0" Margin="8,0,0,0">
-                                <icons:FIcon Icon="Refresh" Width="13" Height="13" Foreground="#606060" />
+                                    CommandParameter="{Binding}" Style="{StaticResource TreeViewItemButtonStyle}">
+                                <icons:FIcon Icon="AddTo" Size="14" Foreground="{StaticResource TreeView.Icon.Foreground}" />
                             </Button>
                         </StackPanel>
                     </Grid>
-                    <HierarchicalDataTemplate.ItemContainerStyle>
-                        <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource TreeViewItemStyle}">
-                            <Setter Property="Padding" Value="14,6" />
-                        </Style>
-                    </HierarchicalDataTemplate.ItemContainerStyle>
                 </HierarchicalDataTemplate>
 
                 <!--Connection-->
@@ -131,42 +191,37 @@
 
                         <StackPanel Grid.Column="0" Orientation="Horizontal">
                             <!--If connection is connected-->
-                            <Image Source="/Resources/Images/disconnected.png" Style="{StaticResource TreeItemIconStyle}" 
+                            <Image Source="/Resources/Images/disconnected.png" Style="{StaticResource TreeViewItemIconStyle}" 
                                    Visibility="{Binding IsConnected, Converter={StaticResource InvertBoolToVisibilityConverter}}" />
-                            
+
                             <!--If connection is disconnected-->
-                            <Image Source="/Resources/Images/connected.png" Style="{StaticResource TreeItemIconStyle}" 
+                            <Image Source="/Resources/Images/connected.png" Style="{StaticResource TreeViewItemIconStyle}" 
                                    Visibility="{Binding IsConnected, Converter={StaticResource BoolToVisibilityConverter}}" />
-                            
+
                             <!--Connection name-->
-                            <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" />
+                            <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" VerticalAlignment="Center" />
                         </StackPanel>
 
                         <StackPanel Grid.Column="1" Orientation="Horizontal" Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibilityConverter}}">
                             <!--Server info-->
                             <Button ToolTip="Server Info" Command="{Binding DataContext.ServerInfoCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
-                                    CommandParameter="{Binding}" Style="{StaticResource TreeItemButtonStyle}" Padding="0,1,0,0">
-                                <icons:FIcon Icon="Info" Size="14" Foreground="#606060" />
+                                    CommandParameter="{Binding}" Style="{StaticResource TreeViewItemButtonStyle}" Margin="0">
+                                <icons:FIcon Icon="Info" Size="14" Foreground="{StaticResource TreeView.Icon.Foreground}" />
                             </Button>
 
                             <!--Reload servers-->
-                            <Button ToolTip="Reload Servers" Command="{Binding DataContext.ReloadServersCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
-                                    CommandParameter="{Binding}" Style="{StaticResource TreeItemButtonStyle}" Padding="2,2,0,0" Margin="8,0,0,0">
-                                <icons:FIcon Icon="Refresh" Width="14" Height="14" Foreground="#606060" />
+                            <Button ToolTip="Reload Servers" Command="{Binding DataContext.ReloadConnectionCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
+                                    CommandParameter="{Binding}" Style="{StaticResource TreeViewItemButtonStyle}">
+                                <icons:FIcon Icon="Refresh" Size="13" Foreground="{StaticResource TreeView.Icon.Foreground}" />
                             </Button>
 
                             <!--Delete connection-->
                             <Button ToolTip="Delete Connection" Command="{Binding DataContext.DeleteConnectionCommand, RelativeSource={RelativeSource FindAncestor, AncestorType=UserControl}}"
-                                    CommandParameter="{Binding}" Style="{StaticResource TreeItemButtonStyle}" Margin="8,0,0,0">
-                                <icons:FIcon Icon="Delete" Size="14" Foreground="#606060" />
+                                    CommandParameter="{Binding}" Style="{StaticResource TreeViewItemButtonStyle}">
+                                <icons:FIcon Icon="Delete" Size="14" Foreground="{StaticResource TreeView.Icon.Foreground}" />
                             </Button>
                         </StackPanel>
                     </Grid>
-                    <HierarchicalDataTemplate.ItemContainerStyle>
-                        <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource TreeViewItemStyle}">
-                            <Setter Property="Padding" Value="14,6" />
-                        </Style>
-                    </HierarchicalDataTemplate.ItemContainerStyle>
                 </HierarchicalDataTemplate>
             </TreeView.Resources>
 

@@ -3,4 +3,7 @@
                     xmlns:converters="clr-namespace:RedisViewer.UI.Converters">
     <converters:KeyTtlConverter x:Key="KeyTtlConverter" />
     <converters:KeyTypeConverter x:Key="KeyTypeConverter" />
+    <converters:TreeViewItemIndentConverter x:Key="TreeViewItemIndentConverter" />
+    <converters:KeyNameValueEqualsConverter x:Key="KeyNameValueEqualsConverter" />
+    <converters:KeyTtlValueEqualsConverter x:Key="KeyTtlValueEqualsConverter" />
 </ResourceDictionary>

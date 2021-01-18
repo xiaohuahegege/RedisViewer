@@ -24,7 +24,11 @@ namespace RedisViewer.Core
             try
             {
                 if (obj != null)
-                    return JsonConvert.SerializeObject(obj, formatting);
+                    return JsonConvert.SerializeObject(obj, new JsonSerializerSettings
+                    {
+                        NullValueHandling = NullValueHandling.Ignore,
+                        Formatting = formatting
+                    });
             }
             catch
             {

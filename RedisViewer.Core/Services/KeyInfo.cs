@@ -21,8 +21,8 @@ namespace RedisViewer.Core
         }
 
         // if type is double or timespan, maybe the value will overflow, just use the string
-        private string _ttl;
-        public string TTL
+        private long _ttl;
+        public long TTL
         {
             get => _ttl;
             set => SetProperty(ref _ttl, value);
@@ -30,10 +30,12 @@ namespace RedisViewer.Core
 
         private readonly IDatabase _database;
 
-        public KeyInfo(IDatabase database, string name)
+        public KeyInfo(IDatabase database, string name, int level = 2)
         {
             _database = database;
+
             Name = name;
+            Level = level;
         }
 
         public async Task<KeyInfo> LoadAsync()
@@ -42,7 +44,7 @@ namespace RedisViewer.Core
             var ttl = await _database.ExecuteAsync("TTL", Name);
 
             Type = type;
-            TTL = ttl.ToString();
+            TTL = long.Parse(ttl.ToString());
 
             return this;
         }
@@ -71,9 +73,9 @@ namespace RedisViewer.Core
             return await _database.KeyRenameAsync(Name, name);
         }
 
-        public async Task<bool> SetTTLAsync(DateTime? expiry)
+        public async Task<bool> SetTTLAsync(long ttl)
         {
-            return await _database.KeyExpireAsync(Name, expiry);
+            return (await _database.ExecuteAsync($"EXPIRE", Name, ttl)).ToString() == "1";
         }
 
         //public async Task<RedisValue[]> GetValueByListAsync(long start, long stop)

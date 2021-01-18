@@ -49,7 +49,8 @@
         <Setter Property="Height" Value="16" />
         <Setter Property="Width" Value="16" />
         <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="Margin" Value="0,0,4,0" />
+        <Setter Property="Margin" Value="0,0,6,0" />
+        <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality" />
     </Style>
 
     <Style x:Key="WindowTitle" TargetType="{x:Type TextBlock}">
@@ -60,7 +61,7 @@
 
     <ContentControl x:Key="WindowLoading">
         <Border Background="#fff" Opacity=".7">
-            <controls:ProgressRing IsActive="{Binding IsShowLoading}" Foreground="#3370FF" Width="30" Height="30" />
+            <controls:ProgressRing IsActive="True" Foreground="#3370FF" Width="30" Height="30" />
         </Border>
     </ContentControl>
 
@@ -99,9 +100,9 @@
 
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="0">
                                             <!--Icon-->
-                                            <Image />
+                                            <Image Source="{TemplateBinding Icon}" Style="{StaticResource WindowIcon}" />
                                             <!--Title-->
-                                            <TextBlock Text="{TemplateBinding Title}" />
+                                            <TextBlock Text="{TemplateBinding Title}" Style="{StaticResource WindowTitle}" />
                                         </StackPanel>
 
                                         <ContentPresenter Grid.Column="1" shell:WindowChrome.IsHitTestVisibleInChrome="True" />

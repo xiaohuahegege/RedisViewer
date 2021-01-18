@@ -5,9 +5,11 @@
     <TargetFramework>net5.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <AssemblyName>RedisViewer</AssemblyName>
+    <ApplicationIcon>App.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="App.ico" />
     <None Remove="Resources\Images\add.png" />
     <None Remove="Resources\Images\connect.png" />
     <None Remove="Resources\Images\connected.png" />
@@ -16,15 +18,20 @@
     <None Remove="Resources\Images\delete.png" />
     <None Remove="Resources\Images\disconnected.png" />
     <None Remove="Resources\Images\edit.png" />
+    <None Remove="Resources\Images\folder.png" />
     <None Remove="Resources\Images\info.png" />
     <None Remove="Resources\Images\key.png" />
     <None Remove="Resources\Images\more.png" />
+    <None Remove="Resources\Images\open_folder.png" />
     <None Remove="Resources\Images\reload.png" />
     <None Remove="Resources\Images\remove.png" />
     <None Remove="Resources\Images\settings.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="App.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\Images\add.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -65,6 +72,9 @@
     <Resource Include="Resources\Images\edit.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Resources\Images\folder.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\Images\info.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
@@ -72,6 +82,9 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\Images\more.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Images\open_folder.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\Images\reload.png">

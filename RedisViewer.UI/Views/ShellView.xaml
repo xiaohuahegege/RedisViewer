@@ -9,7 +9,8 @@
                  Width="1250"
                  WindowStartupLocation="CenterScreen"
                  x:ClassModifier="internal"
-                 IsShowLoading="{Binding IsShowLoading}">
+                 IsShowLoading="{Binding IsShowLoading}"
+                 Icon="/App.ico">
 
     <controls:Window.Resources>
         <ResourceDictionary>

@@ -5,84 +5,154 @@ using Prism.Regions;
 using Prism.Services.Dialogs;
 using RedisViewer.Core;
 using RedisViewer.UI.Events;
-using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace RedisViewer.UI.ViewModels
 {
-    internal class LeftNavViewModel : ViewModelBase, ILeftNavViewModel
+    internal partial class LeftNavViewModel : ViewModelBase, ILeftNavViewModel
     {
         public DelegateCommand PageLoadedCommand { get; }
         public DelegateCommand<InfoBase> NavCommand { get; }
-        public DelegateCommand NewConnectionCommand { get; }
-        public DelegateCommand<DatabaseInfo> NewKeyCommand { get; }
-        public DelegateCommand<DatabaseInfo> ReloadKeysCommand { get; }
         public DelegateCommand<ConnectionInfo> ServerInfoCommand { get; }
-        public DelegateCommand<ConnectionInfo> ReloadServersCommand { get; }
         public DelegateCommand<ConnectionInfo> DeleteConnectionCommand { get; }
-        public DelegateCommand<KeyInfo> CopyKeyNameCommand { get; }
+        public DelegateCommand<ConnectionInfo> ReloadConnectionCommand { get; }
+        public DelegateCommand NewConnectionCommand { get; }
+        public DelegateCommand<DatabaseInfo> ReloadDatabaseCommand { get; }
+        public DelegateCommand<InfoBase> NewKeyCommand { get; }
+        public DelegateCommand<LevelInfo> DeleteLevelCommand { get; }
+        public DelegateCommand<LevelInfo> CopyLevelNameCommand { get; }
+        public DelegateCommand<LevelInfo> ReloadLevelCommand { get; }
         public DelegateCommand<KeyInfo> DeleteKeyCommand { get; }
+        public DelegateCommand<KeyInfo> CopyKeyNameCommand { get; }
 
         private readonly IRegionManager _regionManager;
         private readonly IEventAggregator _eventAggregator;
         private readonly IRegionDialogService _dialogService;
         private readonly IConnectionService _connectionService;
+        private readonly IMessageService<LeftNavViewModel> _messageService;
 
         public LeftNavViewModel(IRegionManager regionManager, IEventAggregator eventAggregator,
-            IRegionDialogService dialogService, IConnectionService connectionService)
+            IRegionDialogService dialogService, IConnectionService connectionService,
+            IMessageService<LeftNavViewModel> messageService)
         {
             _regionManager = regionManager;
             _eventAggregator = eventAggregator;
             _dialogService = dialogService;
             _connectionService = connectionService;
+            _messageService = messageService;
 
             #region PageLoadedCommand
 
-            PageLoadedCommand = new DelegateCommand(async () =>
+            PageLoadedCommand = new DelegateCommand(() =>
             {
-                var connection = await _connectionService.GetAllAsync();
+                Task.Run(async () =>
+                {
+                    var connection = await _connectionService.GetAllAsync();
 
-                if (connection != null && connection.Count > 0)
-                    DispatcherService.BeginInvoke(() => Connections = connection);
+                    if (connection != null && connection.Count > 0)
+                        DispatcherService.BeginInvoke(() => Connections = connection);
+                });
             });
 
             #endregion PageLoadedCommand
 
             #region NavCommand
 
-            NavCommand = new DelegateCommand<InfoBase>(async (item) =>
+            NavCommand = new DelegateCommand<InfoBase>(async (info) =>
             {
-                if (item is ConnectionInfo connection)
+                if (info != null)
                 {
-                    _selectedConnection = connection;
-
-                    if (!connection.IsConnecting && !connection.IsConnected)
+                    if (info is ConnectionInfo connection)
                     {
-                        if (await connection.ConnectAsync())
-                            await connection.LoadAsync();
+                        _selectedConnection = connection;
+
+                        if (!connection.IsConnecting && !connection.IsConnected)
+                        {
+                            if (await connection.ConnectAsync())
+                                await connection.LoadAsync();
+                            else
+                                _messageService.ShowAlert("Redis Viewer", $"Cannot connect to server '{connection.Name}'");
+                        }
                     }
+                    else if (info is DatabaseInfo database)
+                    {
+                        _selectedDatabase = database;
 
-                    return;
-                }
-
-                if (item is DatabaseInfo database)
-                {
-                    _selectedDatabase = database;
-
-                    if (!database.IsInitialized)
-                        await database.LoadAsync();
-
-                    return;
-                }
-
-                if (item is KeyInfo key)
-                {
-                    _regionManager.ShowKeyViewer(key);
-                    return;
+                        if (!database.IsInitialized)
+                            await database.LoadAsync();
+                    }
+                    else if (info is LevelInfo level)
+                    {
+                        if (!level.IsInitialized)
+                            level.IsExpanded = level.IsInitialized = true;
+                    }
+                    else if (info is KeyInfo key)
+                    {
+                        _regionManager.ShowKeyViewer(key);
+                    }
                 }
             });
 
             #endregion NavCommand
+
+            #region ServerInfoCommand
+
+            ServerInfoCommand = new DelegateCommand<ConnectionInfo>((connection) =>
+            {
+                if (connection != null)
+                    _regionManager.ShowServerInfoView(connection);
+            });
+
+            #endregion ServerInfoCommand
+
+            #region DeleteConnectionCommand
+
+            DeleteConnectionCommand = new DelegateCommand<ConnectionInfo>(async (connection) =>
+            {
+                if (connection != null)
+                {
+                    if (_messageService.ShowConfirm("Redis Viewer", "Do you really want to delete connection ?") == ButtonResult.OK)
+                    {
+                        if (await Connections.RemoveAsync(connection))
+                        {
+                            connection.Clear();
+
+                            _ = Task.Run(async () =>
+                              {
+                                  await connection.DisconnectAsync();
+                                  await _connectionService.RemoveAsync(connection);
+                              });
+                        }
+                    }
+                }
+            });
+
+            #endregion DeleteConnectionCommand
+
+            #region ReloadConnectionCommand
+
+            ReloadConnectionCommand = new DelegateCommand<ConnectionInfo>(async (connection) =>
+            {
+                if (connection != null)
+                {
+                    _selectedConnection = connection;
+
+                    if (connection.IsConnected)
+                    {
+                        await connection.LoadAsync();
+                    }
+                    else if (!connection.IsConnecting)
+                    {
+                        if (await connection.ConnectAsync())
+                            await connection.LoadAsync();
+                        else
+                            _messageService.ShowAlert("Redis Viewer", $"Cannot connect to server '{connection.Name}'");
+                    }
+                }
+            });
+
+            #endregion ReloadConnectionCommand
 
             #region NewConnectionCommand
 
@@ -104,77 +174,108 @@ namespace RedisViewer.UI.ViewModels
 
             #endregion NewConnectionCommand
 
+            #region ReloadDatabaseCommand
+
+            ReloadDatabaseCommand = new DelegateCommand<DatabaseInfo>(async (database) =>
+            {
+                await ReloadDatabaseAsync(database);
+            });
+
+            #endregion ReloadDatabaseCommand
+
             #region NewKeyCommand
 
-            NewKeyCommand = new DelegateCommand<DatabaseInfo>((database) =>
+            NewKeyCommand = new DelegateCommand<InfoBase>((info) =>
             {
-                _dialogService.ShowNewKey(database, c =>
+                if (info is DatabaseInfo database)
                 {
-                    if (c.Result == ButtonResult.OK)
+                    _dialogService.ShowNewKey(info, async c =>
                     {
-                    }
-                });
+                        if (c.Result == ButtonResult.OK)
+                            await ReloadDatabaseAsync(database);
+                    });
+                }
             });
 
             #endregion NewKeyCommand
 
-            #region ReloadKeysCommand
+            #region DeleteLevelCommand
 
-            ReloadKeysCommand = new DelegateCommand<DatabaseInfo>(async (database) =>
+            DeleteLevelCommand = new DelegateCommand<LevelInfo>(async (level) =>
             {
-                await database.ReloadAsync();
+                if (level != null)
+                {
+                    await level.DeleteAsync();
+                }
             });
 
-            #endregion ReloadKeysCommand
+            #endregion DeleteLevelCommand
 
-            #region ServerInfoCommand
+            #region CopyLevelNameCommand
 
-            ServerInfoCommand = new DelegateCommand<ConnectionInfo>((connection) =>
+            CopyLevelNameCommand = new DelegateCommand<LevelInfo>((level) =>
             {
-                _regionManager.ShowServerInfoView(connection);
+                if (level != null)
+                    Clipboard.SetText($"{level.Tag}:*");
             });
 
-            #endregion ServerInfoCommand
+            #endregion CopyLevelNameCommand
 
-            #region ReloadServersCommand
+            #region ReloadLevelCommand
 
-            ReloadServersCommand = new DelegateCommand<ConnectionInfo>(async (connection) =>
+            ReloadLevelCommand = new DelegateCommand<LevelInfo>((level) =>
             {
-                await connection.LoadAsync();
+
             });
 
-            #endregion ReloadServersCommand
+            #endregion ReloadLevelCommand
 
-            DeleteConnectionCommand = new DelegateCommand<ConnectionInfo>(async (connection) =>
+            #region DeleteKeyCommand
+
+            DeleteKeyCommand = new DelegateCommand<KeyInfo>(async (key) =>
             {
-                await connection.RemoveAsync();
-                await _connectionService.RemoveAsync(connection);
-                await Connections.RemoveAsync(connection);
+                if (key != null)
+                {
+                    if (_messageService.ShowConfirm("Redis Viewer", "Do you really want to delete this key ?") == ButtonResult.OK)
+                    {
+                        if (await key.DeleteAsync())
+                            DeleteKey(key);
+                    }
+                }
             });
+
+            #endregion DeleteKeyCommand
 
             #region CopyKeyNameCommand
 
             CopyKeyNameCommand = new DelegateCommand<KeyInfo>((key) =>
             {
-                Clipboard.SetText(key.Name);
+                if (key != null)
+                    Clipboard.SetText(key.Name);
             });
 
             #endregion CopyKeyNameCommand
 
-            DeleteKeyCommand = new DelegateCommand<KeyInfo>((key) => { });
-
             SubscribeEvents();
+        }
+
+        private void DeleteKey(KeyInfo key)
+        {
+            //if (key != null && _selectedDatabase.Keys.Any(c => c.Name.Equals(key.Name)))
+            //    _selectedDatabase.RemoveKey(key);
+
+            //_regionManager.ShowHomeView();
+        }
+
+        private async Task ReloadDatabaseAsync(DatabaseInfo database)
+        {
+            if (database != null)
+                await database.ReloadAsync();
         }
 
         private void SubscribeEvents()
         {
-            _eventAggregator.GetEvent<DeleteKeyEvent>().Subscribe(key =>
-            {
-                if (key != null && _selectedDatabase.Keys.Any(c => c.Name.Equals(key.Name)))
-                    _selectedDatabase.RemoveKey(key);
-
-                _regionManager.ShowHomeView();
-            });
+            _eventAggregator.GetEvent<DeleteKeyEvent>().Subscribe(DeleteKey);
         }
 
         /*

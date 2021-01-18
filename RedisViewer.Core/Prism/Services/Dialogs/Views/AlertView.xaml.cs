@@ -2,9 +2,9 @@
 
 namespace Prism.Services.Dialogs
 {
-    sealed partial class MessageView : Window
+    sealed partial class AlertView : Window
     {
-        public MessageView()
+        public AlertView()
         {
             InitializeComponent();
             DataContext = this;

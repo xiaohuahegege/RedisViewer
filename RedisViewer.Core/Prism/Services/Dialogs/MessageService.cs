@@ -7,7 +7,7 @@ namespace Prism.Services.Dialogs
     {
         public void ShowAlert(string title, string message)
         {
-            var view = new MessageView
+            var view = new AlertView
             {
                 WindowStartupLocation = WindowStartupLocation.CenterOwner,
                 Owner = GetWindow(typeof(T)),
@@ -16,6 +16,22 @@ namespace Prism.Services.Dialogs
             };
 
             view.ShowDialog();
+        }
+
+        public ButtonResult ShowConfirm(string title, string message)
+        {
+            var view = new ConfirmView
+            {
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
+                Owner = GetWindow(typeof(T)),
+                Title = title,
+                Message = message
+            };
+
+            var result = view.ShowDialog();
+
+            return result.HasValue ?
+                (result.Value == true ? ButtonResult.OK : ButtonResult.Cancel) : ButtonResult.Cancel;
         }
 
         internal Window GetWindow(object type)

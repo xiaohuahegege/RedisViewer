@@ -10,7 +10,8 @@
                  ShowInTaskbar="False"
                  x:ClassModifier="internal"
                  IsValidationEnabled="{Binding IsValidationEnabled}"
-                 IsShowLoading="{Binding IsShowLoading}">
+                 IsShowLoading="{Binding IsShowLoading}"
+                 Icon="/App.ico">
 
     <controls:Window.Resources>
         <ResourceDictionary>

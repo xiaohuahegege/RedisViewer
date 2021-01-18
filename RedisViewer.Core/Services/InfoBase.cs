@@ -24,10 +24,23 @@ namespace RedisViewer.Core
         }
 
         private bool _isSelected;
+
+        [JsonIgnore]
         public bool IsSelected
         {
             get => _isSelected;
             set => SetProperty(ref _isSelected, value);
         }
+
+        private int _level = -1;
+
+        [JsonIgnore]
+        public int Level
+        {
+            get => _level;
+            set => SetProperty(ref _level, value);
+        }
+
+        public bool IsInitialized { get; set; }
     }
 }
